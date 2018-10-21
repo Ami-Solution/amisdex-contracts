@@ -1,9 +1,13 @@
-// Main test suite for the amisdex exchange contract.
+// Main test suite for the UbiTok.io exchange contract.
 //
 
 var BookERC20EthV1 = artifacts.require('BookERC20EthV1.sol');
 var BookERC20EthV1Dec = artifacts.require('BookERC20EthV1Dec.sol');
 var BookERC20EthV1p1 = artifacts.require('BookERC20EthV1p1.sol'); // TODO - tests
+var BookERC20EthV012 = artifacts.require('OnChainOrderBookV012b.sol'); // TODO - tests
+var BookERC20EthV013 = artifacts.require('OnChainOrderBookV013b.sol'); // TODO - tests
+var BookERC20EthV014 = artifacts.require('OnChainOrderBookV014b.sol'); // TODO - tests
+var TestToken = artifacts.require('AMIS.sol');
 var UbiRewardToken = artifacts.require('UbiRewardToken.sol');
 
 var BookDecimalSetup = {
@@ -35,7 +39,7 @@ var BookZeroDecimalSetup = {
   priceRangeAdjustment: 0
 };
 
-var UbiTokTypes = require('../../ubitok-jslib/ubi-tok-types.js');
+var UbiTokTypes = require('../amis-exchange-jslib/ubi-tok-types.js');
 var BigNumber = UbiTokTypes.BigNumber;
 var ReferenceExchange = require('../../ubitok-jslib/reference-exchange-instrumented.js');
 //var ReferenceExchange = require('../../ubitok-jslib/reference-exchange.js');

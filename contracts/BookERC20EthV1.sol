@@ -367,7 +367,7 @@ contract BookERC20EthV1 {
     // belt and braces
     assert(baseToken.allowance(client, book) == 0);
     balanceBaseForClient[client] += amountBase;
-    ClientPaymentEvent(client, ClientPaymentEventType.TransferFrom, BalanceType.Base, int(amountBase));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.TransferFrom, BalanceType.Base, int(amountBase));
   }
 
   // Public Funds Manipulation - withdraw base tokens (as a transfer).
@@ -382,7 +382,7 @@ contract BookERC20EthV1 {
     // if we cannot trust the token then why are we allowing it to be traded?
     // NB: needs change for older ERC20 tokens that don't return bool
     require(baseToken.transfer(client, amountBase));
-    ClientPaymentEvent(client, ClientPaymentEventType.Transfer, BalanceType.Base, -int(amountBase));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.Transfer, BalanceType.Base, -int(amountBase));
   }
 
   // Public Funds Manipulation - deposit counter currency (ETH).
@@ -393,7 +393,7 @@ contract BookERC20EthV1 {
     require(amountCntr > 0);
     // overflow safe - if someone owns pow(2,255) ETH we have bigger problems
     balanceCntrForClient[client] += amountCntr;
-    ClientPaymentEvent(client, ClientPaymentEventType.Deposit, BalanceType.Cntr, int(amountCntr));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.Deposit, BalanceType.Cntr, int(amountCntr));
   }
 
   // Public Funds Manipulation - withdraw counter currency (ETH).
@@ -406,7 +406,7 @@ contract BookERC20EthV1 {
     balanceCntrForClient[client] -= amountCntr;
     // safe - not enough gas to do anything interesting in fallback, already adjusted balance
     client.transfer(amountCntr);
-    ClientPaymentEvent(client, ClientPaymentEventType.Withdraw, BalanceType.Cntr, -int(amountCntr));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.Withdraw, BalanceType.Cntr, -int(amountCntr));
   }
 
   // Public Funds Manipulation - deposit previously-approved reward tokens.
@@ -421,7 +421,7 @@ contract BookERC20EthV1 {
     // belt and braces
     assert(rwrdToken.allowance(client, book) == 0);
     balanceRwrdForClient[client] += amountRwrd;
-    ClientPaymentEvent(client, ClientPaymentEventType.TransferFrom, BalanceType.Rwrd, int(amountRwrd));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.TransferFrom, BalanceType.Rwrd, int(amountRwrd));
   }
 
   // Public Funds Manipulation - withdraw base tokens (as a transfer).
@@ -434,7 +434,7 @@ contract BookERC20EthV1 {
     balanceRwrdForClient[client] -= amountRwrd;
     // we wrote the reward token so we know it supports ERC20 properly and is not evil
     require(rwrdToken.transfer(client, amountRwrd));
-    ClientPaymentEvent(client, ClientPaymentEventType.Transfer, BalanceType.Rwrd, -int(amountRwrd));
+    emit ClientPaymentEvent(client, ClientPaymentEventType.Transfer, BalanceType.Rwrd, -int(amountRwrd));
   }
 
   // Public Order View - get full details of an order.
@@ -597,7 +597,7 @@ contract BookERC20EthV1 {
     ) public {
     address client = msg.sender;
     require(orderId != 0 && orderForOrderId[orderId].client == 0);
-    ClientOrderEvent(client, ClientOrderEventType.Create, orderId, maxMatches);
+    emit ClientOrderEvent(client, ClientOrderEventType.Create, orderId, maxMatches);
     orderForOrderId[orderId] =
       Order(client, price, sizeBase, terms, Status.Unknown, ReasonCode.None, 0, 0, 0, 0);
     uint128 previousMostRecentOrderIdForClient = mostRecentOrderIdForClient[client];
@@ -644,10 +644,10 @@ contract BookERC20EthV1 {
     if (status != Status.Open && status != Status.NeedsGas) {
       return;
     }
-    ClientOrderEvent(client, ClientOrderEventType.Cancel, orderId, 0);
+    emit ClientOrderEvent(client, ClientOrderEventType.Cancel, orderId, 0);
     if (status == Status.Open) {
       removeOpenOrderFromBook(orderId);
-      MarketOrderEvent(block.timestamp, orderId, MarketOrderEventType.Remove, order.price,
+      emit MarketOrderEvent(block.timestamp, orderId, MarketOrderEventType.Remove, order.price,
         order.sizeBase - order.executedBase, 0);
     }
     refundUnmatchedAndFinish(orderId, Status.Done, ReasonCode.ClientCancel);
@@ -662,7 +662,7 @@ contract BookERC20EthV1 {
     if (order.status != Status.NeedsGas) {
       return;
     }
-    ClientOrderEvent(client, ClientOrderEventType.Continue, orderId, maxMatches);
+    emit ClientOrderEvent(client, ClientOrderEventType.Continue, orderId, maxMatches);
     order.status = Status.Unknown;
     processOrder(orderId, maxMatches);
   }
@@ -1070,11 +1070,11 @@ contract BookERC20EthV1 {
     if (stillRemainingBase < baseMinRemainingSize) {
       refundUnmatchedAndFinish(theirOrderId, Status.Done, ReasonCode.None);
       // someone building an UI on top needs to know how much was match and how much was refund
-      MarketOrderEvent(block.timestamp, theirOrderId, MarketOrderEventType.CompleteFill,
+      emit MarketOrderEvent(block.timestamp, theirOrderId, MarketOrderEventType.CompleteFill,
         theirPrice, matchBase + stillRemainingBase, matchBase);
       return true;
     } else {
-      MarketOrderEvent(block.timestamp, theirOrderId, MarketOrderEventType.PartialFill,
+      emit MarketOrderEvent(block.timestamp, theirOrderId, MarketOrderEventType.PartialFill,
         theirPrice, matchBase, matchBase);
       return false;
     }
@@ -1131,7 +1131,7 @@ contract BookERC20EthV1 {
       existingLastOrderChainNode.nextOrderId = orderId;
       orderChain.lastOrderId = orderId;
     }
-    MarketOrderEvent(block.timestamp, orderId, MarketOrderEventType.Add,
+    emit MarketOrderEvent(block.timestamp, orderId, MarketOrderEventType.Add,
       price, order.sizeBase - order.executedBase, 0);
     order.status = Status.Open;
   }
