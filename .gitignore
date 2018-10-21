@@ -5,3 +5,4 @@ reference-exchange.js
 npm-debug.log
 .vscode/settings.json
 build
+.env

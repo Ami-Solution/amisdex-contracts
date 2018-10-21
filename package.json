@@ -8,27 +8,26 @@
   "scripts": {
     "test": "truffle test && shx mkdir -p .nyc_output && shx mv coverage.data .nyc_output/ && shx cp ../ubitok-jslib/reference-exchange.js . && ./node_modules/.bin/nyc report --report-dir report --reporter=html",
     "start1": "pnpm install truffle ; truffle test",
-    "start": "node_modules/.bin/truffle serve"
+    "start": "pnpm install dotenv; pnpm install truffle-hdwallet-provider; pnpm install truffle-privatekey-provider; pnpm install -g truffle@3.2.1; node_modules/.bin/truffle serve --force"
   },
   "dependencies": {
-    "ubitok-jslib": "file:../ubitok-jslib/ubi-tok-types.js",
-    "dotenv": "4.x",
+    "chai": "^4.0.2",
     "ethereum-datetime": "^1.0.0",
     "fs": "0.0.1-security",
-    "papaparse": "^4.3.7",
-    "truffle-hdwallet-provider": "0.0.3",
-    "truffle-privatekey-provider": "^0.1.0",
-    "web3": "^1.0.0-beta.34",
-    "web3-eth-abi": "^1.0.0-beta.33",
-    "truffle": "4.x",
     "ganache": "4.x",
-    "shx": "^0.2.2",
-    "chai": "^4.0.2",
     "mocha": "^3.4.2",
-    "nyc": "^11.1.0"
+    "nyc": "^11.1.0",
+    "papaparse": "^4.3.7",
+    "shx": "^0.2.2",
+    "truffle": "3.2.1",
+    "truffle-hdwallet-provider": "^0.0.6",
+    "truffle-privatekey-provider": "^0.1.0",
+    "ubitok-jslib": "file:./ubitok-jslib",
+    "web3": "^1.0.0-beta.34",
+    "web3-eth-abi": "^1.0.0-beta.33"
   },
   "devDependencies": {
-    "dotenv": "4.x",
+    "dotenv": "^4.0.0",
     "eslint": "^4.3.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-html": "^3.0.0",
@@ -36,7 +35,6 @@
     "eth-gas-reporter": "^0.1.1",
     "ethereumjs-abi": "^0.6.4",
     "ethers": "^2.1.3",
-    "truffle": "^4.1.5"
+    "truffle": "3.2.1"
   }
-   
 }
